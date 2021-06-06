@@ -46,7 +46,8 @@ const reactRefreshOverlayEntry = require.resolve(
 const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false';
 
 const emitErrorsAsWarnings = process.env.ESLINT_NO_DEV_ERRORS === 'true';
-const disableESLintPlugin = process.env.DISABLE_ESLINT_PLUGIN === 'true';
+const disableESLintPlugin = process.env.DISABLE_ESLINT_PLUGIN === 'true'||true;
+// disableESLintPlugin用来控制是否使用eslint,目前是强制关闭,去除后面的||true就可以开启eslint了------------------
 
 const imageInlineSizeLimit = parseInt(
   process.env.IMAGE_INLINE_SIZE_LIMIT || '10000'
@@ -63,6 +64,8 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+const lessRegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
 
 const hasJsxRuntime = (() => {
   if (process.env.DISABLE_NEW_JSX_TRANSFORM === 'true') {
@@ -497,6 +500,33 @@ module.exports = function (webpackEnv) {
                 },
               }),
             },
+            
+            {
+              test: lessRegex,
+              exclude: lessModuleRegex,
+              use: getStyleLoaders(
+              {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction && shouldUseSourceMap,
+              },
+              'less-loader'
+              ),
+              sideEffects: true,
+          },
+          {
+              test: lessModuleRegex,
+              use: getStyleLoaders(
+              {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  modules: {
+                  getLocalIdent: getCSSModuleLocalIdent,
+                  },
+              },
+              'less-loader'
+              ),
+          },          
+
             // Opt-in support for SASS (using .scss or .sass extensions).
             // By default we support SASS Modules with the
             // extensions .module.scss or .module.sass

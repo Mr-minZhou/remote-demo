@@ -8,13 +8,14 @@ import {
   useLocation
 } from "react-router-dom";
 
-const login = lazy(() => import('@/pages/login'));
+// 组件懒加载
+const Login = lazy(() => import('@/pages/login'));
 const Home = lazy(() => {
   console.log('Home组件被加载了');
   // 只会执行一次
   return import('@/pages/home');
 });
-// 组件懒加载
+const Shop = lazy(() => import('@/pages/shop'));
 
 function App() {
   return (
@@ -23,10 +24,11 @@ function App() {
         <Suspense fallback={<div>Loading...</div>}>
           {/* 使用懒加载必须用Suspense,不然会报错 */}
           <Switch>
-            <Route path="/login" component={login} ></Route>
+            <Route path="/login" component={Login} ></Route>
             <Route path="/home" component={Home} ></Route>
+            <Route path="/shop" component={Shop} ></Route>
 
-            <Redirect exact from='/' to="/list"></Redirect>
+            <Redirect exact from='/' to="/login"></Redirect>
             {/* 路由重定向 */}
 
             <Route path="*" component={NotFound} ></Route>
